@@ -1,0 +1,14 @@
+@startuml
+
+:User:
+
+rectangle "Analysis Visualizing System (CZUC-0006)" <<Subsystem>>  {
+    usecase "Render Map" as UC1
+    usecase "No results to show" as UC2
+    usecase "Generate Report" as UC3
+}
+
+User -- UC1
+UC1 <.. UC2: <<extends>>
+UC1 <.. UC3: <<includes>>
+@enduml

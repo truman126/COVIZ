@@ -1,0 +1,31 @@
+@startuml
+participant UI
+participant ":AnalysisResultRenderer" as AnalysisResultRenderer
+participant ":AnalysisExecutor" as Executor
+participant ":Country" as Country
+autoactivate on
+activate AnalysisResultRenderer
+UI -> AnalysisResultRenderer: Analysis Finished
+AnalysisResultRenderer -> Executor: hasResult()
+Executor --> AnalysisResultRenderer: Has Analysis Result
+opt Analysis Result is present
+    AnalysisResultRenderer -> Executor: getResult()
+    Executor --> AnalysisResultRenderer: Analysis Result
+    opt Analysis retrieved is different from currently rendered analysis
+        AnalysisResultRenderer -> AnalysisResultRenderer: Calculate circle sizes and locations
+        loop For each country in the Analysis Result
+            AnalysisResultRenderer -> Country: getLatitude()
+            Country --> AnalysisResultRenderer: Latitude
+            AnalysisResultRenderer -> Country: getLongitude()
+            Country --> AnalysisResultRenderer: Longitude
+            AnalysisResultRenderer -> AnalysisResultRenderer: Convert latitude and Longitude to pixel locations
+            return Pixel location of country on map
+            AnalysisResultRenderer -> AnalysisResultRenderer: Calculate appropriate radius of circle depicting analysis result
+            return Radius of circle
+        end
+        return Circle sizes and locations
+        return Redraw UI
+    end
+end
+
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+:User:
+
+:Web Service:
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+|AnalysisResultRenderer|
+start
+:Check for finished Analysis;
+|AnalysisResultRenderer|
+if () then (Analysis is present)
+    :Retrieve Analysis Info;
+    if () then (New Analysis to render)
+        fork
+            :Calculate Circle Radii;
+        fork again
+            :Calculate Country Locations;
+        end fork
+        :Draw Country Analysis Results on UI;
+    else (No new Analysis to render)
+    endif
+else (No Analysis completed)
+endif
+stop
+@enduml

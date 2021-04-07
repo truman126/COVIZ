@@ -1,0 +1,33 @@
+@startuml
+left to right direction
+skinparam monochrome true
+package "Analysis System"{
+    node "Analysis Engine: Model"{
+        [:ca.group1.analysisengine.AnalysisExecutor] as AnalysisExecutor
+        [:ca.group1.analysisenegine.AnalysisFactory] as AnalysisFactory
+        [:ca.group1.analysisengine.analyses.*] as analyses
+        analyses - IAnalysis
+        IAnalysis <- AnalysisExecutor
+        [:ca.group1.analysisengine.apigetters.*]
+        [:ca.group1.analysisengine.apigetters.*] - APIInformationGetter
+        APIInformationGetter <- analyses
+
+    }
+    node "Result Renderer: View"{
+        [:ca.group1.resultrenderer.AnalysisResultRenderer]
+        [:ca.group1.resultrenderer.ResultRendererFactory]
+        [:ca.group1.resultrenderer.renderers.*]
+        [:ca.group1.resultrenderer.renderers.*] - IResultRenderer
+        IResultRenderer <- [:ca.group1.resultrenderer.AnalysisResultRenderer]
+    }
+
+    node "Query Construction: Controller"{
+        [:ca.group1.queryconstruction.CountryListBuilder]
+    }
+
+
+}
+package "Login System"{
+    [:ca.group1.LoginVerifier]
+}
+@enduml

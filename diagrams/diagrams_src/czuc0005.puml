@@ -1,0 +1,18 @@
+@startuml
+:User:
+:COVID-19 API: as API
+
+rectangle "Analysis System (CZUC-0005)" <<Subsystem>>{
+    usecase "Recalculate" as UC1
+    usecase "Gather Information" as UC2
+    usecase "API Unreachable" as UC3
+    usecase "Analyze Data" as ANALYSIS
+    usecase "No Countries Selected" as NOCOUNTRY
+}
+User -- UC1
+UC1 ..> UC2: <<includes>>
+API -up- UC2
+UC1 ..> ANALYSIS: <<includes>>
+UC1 <.. UC3: <<extends>>
+UC1 <.. NOCOUNTRY: <<extends>>
+@enduml

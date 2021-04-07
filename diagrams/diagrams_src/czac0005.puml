@@ -1,0 +1,71 @@
+@startuml
+!pragma useVerticalIf
+|:AnalysisExecutor|
+start
+:AnalysisExecutor.runAnalysis();
+if () then (No countries selected)
+    |:AnalysisExecutor|
+    :Tell user to select a country;
+else (At least one country selected)
+    :Execute Analysis;
+
+    |:IAnalysis|
+    :Identify requirements for given Analysis Type;
+    fork
+        if () then (Need Country Population for Analysis)
+            (A)
+            detach
+            |:CountryPopulationAPIGetter|
+            (A)
+            :Create URL For API Call;
+            :Make Call to API;
+            :Parse Results;
+            (D)
+            detach
+            |:IAnalysis|
+            (D)
+        else (Not Needed)
+            |:IAnalysis|
+        endif
+
+    fork again
+        |:IAnalysis|
+        if () then (Need Country Cases for Analysis)
+            (B)
+            detach
+            |:CountryCasesAPIGetter|
+            (B)
+            :Create URL For API Call;
+            :Make Call to API;
+            :Parse Results;
+            (E)
+            detach
+            |:IAnalysis|
+            (E)
+        else (Not needed)
+            |:IAnalysis|
+        endif
+    fork again
+        if () then (Need Country Deaths For Analysis)
+            (C)
+            detach
+            |:CountryDeathsAPIGetter|
+            (C)
+            :Create URL For API Call;
+            :Make Call to API;
+            :Parse Results;
+            (F)
+            detach
+            |:IAnalysis|
+            (F)
+        else (Not needed)
+            |:IAnalysis|
+        endif
+    endfork
+    :Run Analysis on results;
+    |:AnalysisExecutor|
+    :Store Results;
+endif
+stop
+
+@enduml

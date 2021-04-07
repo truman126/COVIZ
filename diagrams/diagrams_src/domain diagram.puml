@@ -1,0 +1,127 @@
+@startuml domain_diagram
+left to right direction
+class Country{
+    -longName:String
+    -shortName:String
+    -latitude:Double
+    -longitude:Double
+    +getLongName():String
+    +getShortName():String
+    +getLatitude():Double
+    +getLongitude():Double
+}
+interface IAPI{
+    getDataURL():okhttp.Request
+}
+abstract class APIInformationGetter{
+    #getData():String
+}
+class CountryPopulationAPIGetter{
+    +getPopulation():Map<Country, Integer>
+    +getMalePopulation():Map<Country, Integer>
+    +getFemalePopulation():Map<Country, Integer>
+}
+class CountryCaseAPIGetter{
+    +getMaleCases():Map<Country, Integer>
+    +getFemaleCases():Map<Country, Integer>
+    +getCases():Map<Country:Integer>
+}
+package "Country List Add/Remove CZUC-0002/3" <<Rectangle>>{
+    class CountryListBuilder{
+        master list of countries
+        --
+        +getAllCountries():List<Country>
+        +getList():List<Country>
+        +addCountry(Country):Boolean
+        +removeCountry(Country):Boolean
+        +getCountryByName(String):Country
+    }
+}
+class CountryDeathAPIGetter{
+    +getMaleDeaths():Map<Country, Integer>
+    +getFemaleDeaths():Map<Country, Integer>
+    +getDeaths():Map<Country:Integer>
+}
+
+
+interface IAnalysis{
+    +analyze():Map<Country, Double>
+}
+
+
+class TotalCaseAnalysis{}
+class CasesPerCapitaAnalysis{}
+class DeathsPerCapitaAnalysis{}
+class MajorityCaseSexPerCapitaAnalysis{}
+
+
+class AnalysisResultRenderer {
+    +AnalysisResultRenderer(AnalysisExecutor)
+    +render()
+}
+package "Analysis Selection CZUC-0004" <<Rectangle>>{
+    enum AnalysisType{
+        TOTAL_CASES
+        CASES_PER_CAPITA
+        DEATHS_PER_CAPITA
+        MAJORITY_CASE_SEX_PER_CAPITA
+    }
+
+    class AnalysisExecutor{
+        -analysisType:AnalysisType
+        -countryList:List<Country>
+        +runAnalysis()
+        +setAnalysisType(AnalysisType)
+        +getAnalysisType():AnalysisType
+        +getResult():Map<Country, Double>
+        +hasResult():Boolean
+    }
+
+    class AnalysisFactory{
+        +getAnalysis(AnalysisType):IAnalysis
+    }
+}
+
+package "Login System CZUC-0001" <<Rectangle>>{
+    class LoginVerifier{
+        +checkLogin(String, String):boolean
+    }
+}
+
+note top of TotalCaseAnalysis: The number of cases in a country
+note top of CasesPerCapitaAnalysis: The number of cases divided by the population
+note top of DeathsPerCapitaAnalysis: The number of deaths divided by the population
+note top of MajorityCaseSexPerCapitaAnalysis: Whether male deaths per male capita is higher\nthan female deaths per female capita
+
+note top of AnalysisExecutor: Also used for choosing what\n type of analysis to execute
+
+note top of APIInformationGetter: Takes a country in its constructor to determine\nwhich country's data to retrieve from the API\n it is up to the implementor to determine which\nURL to ask for data
+note bottom of APIInformationGetter: Can be lazy: Make API call only when its accessed
+note top of Country: All Country objects that represent a single country can be a single instance
+APIInformationGetter <|-- CountryPopulationAPIGetter
+APIInformationGetter <|-- CountryCaseAPIGetter
+APIInformationGetter <|-- CountryDeathAPIGetter
+IAPI <|.. APIInformationGetter: < gets URL from
+Country "1" -- "*" APIInformationGetter: API call targets specified by <
+CountryListBuilder "1" -- "*" Country: builds lists of >
+IAnalysis "*" -- "1" Country: analysis targets specified by >
+TotalCaseAnalysis ..|> IAnalysis
+TotalCaseAnalysis -- CountryCaseAPIGetter: uses data from >
+CasesPerCapitaAnalysis ..|> IAnalysis
+CasesPerCapitaAnalysis -- CountryCaseAPIGetter: uses data from >
+CasesPerCapitaAnalysis -- CountryPopulationAPIGetter: uses data from >
+DeathsPerCapitaAnalysis ..|> IAnalysis
+DeathsPerCapitaAnalysis -- CountryDeathAPIGetter: uses data from >
+DeathsPerCapitaAnalysis -- CountryPopulationAPIGetter: uses data from >
+MajorityCaseSexPerCapitaAnalysis ..|> IAnalysis
+MajorityCaseSexPerCapitaAnalysis -- CountryCaseAPIGetter: uses data from >
+MajorityCaseSexPerCapitaAnalysis -- CountryPopulationAPIGetter: uses data from >
+AnalysisResultRenderer -- AnalysisExecutor: renders results of >
+AnalysisExecutor -up- AnalysisType: analysis selected by >
+AnalysisFactory *-- CasesPerCapitaAnalysis: constructed by
+AnalysisFactory *-- DeathsPerCapitaAnalysis: constructed by
+AnalysisFactory *-- MajorityCaseSexPerCapitaAnalysis: constructed by
+AnalysisFactory *-- TotalCaseAnalysis: constructed by
+AnalysisExecutor -- AnalysisFactory
+AnalysisType -- AnalysisFactory
+@enduml
